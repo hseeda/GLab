@@ -89,8 +89,6 @@
 		void post(const ES::event &event);
 		void post(et event_type);
 		void post(et event_type,packet &data);
-
-		
 		void postSkipRepeat(const ES::event& event);
 		void postReplaceRepeat(const ES::event& event);
 
