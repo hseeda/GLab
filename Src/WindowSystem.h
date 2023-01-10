@@ -175,6 +175,7 @@ namespace WS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #pragma endregion ImGui_Stuff
 
+	inline int			logLevel = 0;
 	inline float		winPosX = 400;
 	inline float		winPosY = 200;
 
@@ -190,8 +191,8 @@ namespace WS
 	inline float		fullHeight;
 	
 	inline float		Aspect = (float) Width / (float)Height;
-	inline std::string	GLabTitleDafault = "GLab Ver. 1.0";
-	inline std::string	GLabTitle;
+	inline std::string	appNameDefault = "GLab Ver. 1.0";
+	inline std::string	appName;
 
 	inline int			frame_buffer_w, frame_buffer_h;
 	inline GLFWwindow* window;
@@ -267,7 +268,20 @@ namespace WS
 					LineOffsets.push_back(old_size + 1);
 		}
 
-		void    Draw(const char* title, bool* p_open = NULL)
+		void    AddLog(int lvl, const char* fmt, ...) IM_FMTARGS(2)
+		{
+			if (lvl > WS::logLevel) return;
+			int old_size = Buf.size();
+			va_list args;
+			va_start(args, fmt);
+			Buf.appendfv(fmt, args);
+			va_end(args);
+			for (int new_size = Buf.size(); old_size < new_size; old_size++)
+				if (Buf[old_size] == '\n')
+					LineOffsets.push_back(old_size + 1);
+		}
+
+		void Draw(const char* title, bool* p_open = NULL)
 		{
 			if (!ImGui::Begin(title, p_open))
 			{
@@ -361,6 +375,6 @@ namespace WS
 	void drawImguiLog();
 	void drawImguiMenu();
 
-	static ExampleAppLog log;
+	inline ExampleAppLog log;
 }
 

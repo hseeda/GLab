@@ -11,7 +11,6 @@
 #include "imgui_impl_opengl3.h"
 
 #include "stb_image.h"
-
 #include "SOIL/SOIL.h"
 
 using namespace glm;

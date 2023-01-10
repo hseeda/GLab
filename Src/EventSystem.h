@@ -54,6 +54,27 @@
 			} data;
 		};
 
+		inline std::string eventTypeName(et _type) {
+			switch (_type)
+			{
+			case ES::none: return "none";
+			case ES::glfw_error: return "glfw_error";
+			case ES::window_resize: return "window_resize";
+			case ES::window_finished_resizing: return "window_finished_resizing";
+			case ES::mouse_wheel: return "mouse_wheel";
+			case ES::mouse_move_while_pressed: return "mouse_move_while_pressed";
+			case ES::mouse_click: return "mouse_click";
+			case ES::mouse_move: return "mouse_move";
+			case ES::imgui_button: return "imgui_button";
+			case ES::imgui_slider: return "imgui_slider";
+			case ES::imgui_checkbox: return "imgui_checkbox";
+			case ES::imgui_textbox: return "imgui_textbox";
+			case ES::imgui_text: return "imgui_text";
+			case ES::imgui_color_edit3: return "imgui_color_edit3";
+			default: return "unknown";
+			}
+		}
+
 #define EVENT_SYSTEM_MAX_EVENTS 32
 	
 	//------------------------------------------------------------------------------ Classes

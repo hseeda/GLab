@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EventSystem.h"
+#include "WindowSystem.h"
 
 namespace ES
 {
@@ -26,6 +27,7 @@ namespace ES
 				auto func = slot_pair[i].second;
 				if (id < 0 || event.data.ID == id)
 				{
+					WS::log.AddLog(5,"[event][%i] %s\n", (int)event.tID, eventTypeName(event.tID).c_str());
 					func(event);
 				}
 				//_pl("event skipped");

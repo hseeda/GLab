@@ -15,8 +15,16 @@
 int main(int, char**)
 {
 	pwd();
+
+   
+    WS::log.AddLog(0,"[init] %s\n", getCurrentTime().c_str()); 
+    WS::log.AddLog(0,"[init] %s started\n", WS::appNameDefault.c_str()); 
+    WS::log.AddLog(0,"[init] %s\n", getCurrentDirectory().c_str()); 
     //_pl(openFileDialog());
     WS::init();
+
+
+
     //GS::init();
 	SS::init();
     SS::print();

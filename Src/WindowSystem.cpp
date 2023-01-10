@@ -5,7 +5,6 @@
 #include "FileSystem.h"
 #include "RenderSystem.h"
 
-
 namespace WS
 {
 	
@@ -34,6 +33,7 @@ namespace WS
 		// Setup window
 		glfwSetErrorCallback(glfw_error_callback);
 		if (!glfwInit()) return 1;
+		WS::log.AddLog(0,"[init] glfw\n");
 		const char* glsl_version = "#version 130";
 		glfwWindowHint(GLFW_SAMPLES, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -42,10 +42,10 @@ namespace WS
 
 		fullWidth  = leftWidth + Width + rightWidth;
 		fullHeight = topHeight + Height + bottomHeight;
-		GLabTitle = GLabTitleDafault;
+		appName = appNameDefault;
 		
 		// Create window with graphics context
-		window = glfwCreateWindow(fullWidth, fullHeight, GLabTitle.c_str(), NULL, NULL);
+		window = glfwCreateWindow(fullWidth, fullHeight, appName.c_str(), NULL, NULL);
 		if (window == NULL) return 1;
 		glfwSetWindowPos(window, winPosX, winPosY);
 		//---------------------------------------------- set window icon
@@ -163,6 +163,7 @@ namespace WS
 		ES::subscribe(ES::window_resize, f);
 		//-- IMGUI Windows-------------------------------------------------------------------------------------
 
+		WS::log.AddLog(0,"[init] IMGui\n");
 		return 0;
 	}
 
@@ -267,9 +268,9 @@ namespace WS
 	
 	void preRender()
 	{
-		GLabTitle = GLabTitleDafault + _fprint("  average {:3.3f} ms/frame fps = {:<5.0f}", 
+		appName = appNameDefault + _fprint("  average {:3.3f} ms/frame fps = {:<5.0f}",
 			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		glfwSetWindowTitle(WS::window, GLabTitle.c_str());
+		glfwSetWindowTitle(WS::window, appName.c_str());
 		//GLint pname[4];
 		//glGetIntegerv(GL_VIEWPORT, pname);
 		ren->preRender();
@@ -493,10 +494,10 @@ namespace WS
 
 	void doWhileResizing() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		resizeImgui();
-		WS::preRenderOverlay();
-		TS::RenderText("GLAB Rev 0.1 (C)", 25.0f, 25.0f, 1.0f, glm::vec3(0.3, 0.3f, 0.3f));
-		WS::postRenderOverlay();
+		//resizeImgui();
+		//WS::preRenderOverlay();
+		//TS::RenderText("GLAB Rev 0.1 (C)", 25.0f, 25.0f, 1.0f, glm::vec3(0.3, 0.3f, 0.3f));
+		//WS::postRenderOverlay();
 		glfwSwapBuffers(WS::window);
 	}
 

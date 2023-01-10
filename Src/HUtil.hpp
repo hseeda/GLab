@@ -17,6 +17,7 @@
 #include	<chrono>	    //	std::chrono				
 #include	<cstdint>	    //	std::int_fast64_t,	std::uint_fast32_t	
 #include	<cstdlib>	    //	std::size_t
+#include	<ctime>
 #include	<filesystem>    						
 #include    <fcntl.h>
 #include	<format>        //  std::format
@@ -226,7 +227,7 @@ inline std::string rtrim(const std::string& s) { size_t end = s.find_last_not_of
 inline std::string trim(const std::string& s) { return rtrim(ltrim(s)); }
 inline std::string str2upper(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::toupper); return s; }
 inline std::string str2lower(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::tolower); return s; }
-inline bool         strCompare(std::string v1, std::string v2, bool strict = false) {
+inline bool        strCompare(std::string v1, std::string v2, bool strict = false) {
 	if (!strict)
 		if (str2lower(trim(v1)) == str2lower(trim(v2)))
 			return true;
@@ -247,7 +248,7 @@ inline std::vector<std::string> split(const char* str, char separator)
 	} while (0 != *str++);
 	return result;
 }
-inline std::string         getFirstToken(std::string line, char separator = ' ') {
+inline std::string              getFirstToken(std::string line, char separator = ' ') {
 	std::istringstream iss(line);
     std::string token;
 	std::getline(iss, token, separator);
@@ -257,7 +258,14 @@ inline std::string         getFirstToken(std::string line, char separator = ' ')
 	else
 		return "";
 }
-inline char         getChar(const std::string& s, size_t pos) { return (pos < s.size()) ? s[pos] : 0; }
+inline char        getChar(const std::string& s, size_t pos) { return (pos < s.size()) ? s[pos] : 0; }
+inline std::string getCurrentTime() {
+	auto t = std::time(nullptr);
+	auto tm = *std::localtime(&t);
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
+	return oss.str();
+}
 //====================================================================================================
 class HTimer
 {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ShaderSystem.h"
+#include "WindowSystem.h"
 #include "FileSystem.h"
 
 namespace SS {
@@ -10,12 +11,11 @@ namespace SS {
 	{
 		// texture 0
 		addTexture("matlab.png");
-		
 		// shader 0  no textures
 		addShader("o1");
 		// shader 1 with texture as image
 		addShader("t1"); 
-
+		WS::log.AddLog(0,"[init] shader system\n");
 	}
 		
 	int addShader(std::string short_name_without_ext)
