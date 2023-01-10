@@ -47,19 +47,18 @@
 			}
 		}
 		struct packet {
-			inline char* cp(int _i) { return &data.__c[_i]; }
-			inline bool* bp(int _i) { return &data.__b[_i]; }
-			inline int* ip(int _i) { return &data.__i[_i]; }
-			inline unsigned int* up(int _i) { return &data.__u[_i]; }
-			inline float* fp(int _i) { return &data.__f[_i]; }
-			inline double* dp(int _i) { return &data.__d[_i]; }
-
-			inline char& c(int _i) { return data.__c[_i]; }
-			inline bool& b(int _i) { return data.__b[_i]; }
-			inline int& i(int _i) { return data.__i[_i]; }
-			inline unsigned int& u(int _i) { return data.__u[_i]; }
-			inline float& f(int _i) { return data.__f[_i]; }
-			inline double& d(int _i) { return data.__d[_i]; }
+			inline char*			cp(int _i) { return &data.__c[_i]; }
+			inline bool*			bp(int _i) { return &data.__b[_i]; }
+			inline int*				ip(int _i) { return &data.__i[_i]; }
+			inline unsigned int*	up(int _i) { return &data.__u[_i]; }
+			inline float*			fp(int _i) { return &data.__f[_i]; }
+			inline double*			dp(int _i) { return &data.__d[_i]; }
+			inline char&			c(int _i)  { return data.__c[_i]; }
+			inline bool&			b(int _i)  { return data.__b[_i]; }
+			inline int&				i(int _i)  { return data.__i[_i]; }
+			inline unsigned int&	u(int _i)  { return data.__u[_i]; }
+			inline float&			f(int _i)  { return data.__f[_i]; }
+			inline double&			d(int _i)  { return data.__d[_i]; }
 			int ID = -1;
 		private:
 			union {
@@ -78,13 +77,16 @@
 #define EVENT_SYSTEM_MAX_EVENTS 32
 	
 	//------------------------------------------------------------------------------ Classes
-	struct event {
+		struct levent {
+			et tID;
+			event() : tID(et::none) {}
+			event(et typeID) : tID(typeID) {}
+			
+		};
+		struct event : public levent {
 		packet data;
-		et tID = et::none;
 		void* p;
 		std::string str;
-		event() : tID() {}
-		event(et typeID) : tID(typeID) {}
 		event(et typeID, packet &idata) : tID(typeID),data(idata) {}
 		event(et typeID, double d0, double d1) : tID(typeID) {data.d(0) = d0; data.d(1) = d1;}
 		event(et typeID, void* _p, int i0, int i1, int i2)	: tID(typeID) {p = _p;data.i(0) = i0;data.i(1) = i1; data.i(2) = i2; }
