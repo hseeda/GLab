@@ -26,7 +26,6 @@
 			imgui_text				  = 55,
 			imgui_color_edit3		  = 56
 		};
-
 		struct packet {
 			inline char* cp(int _i) { return &data.__c[_i]; }
 			inline bool* bp(int _i) { return &data.__b[_i]; }
