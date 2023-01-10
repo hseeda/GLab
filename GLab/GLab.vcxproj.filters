@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{de9138c8-78fe-412f-99ea-4655aa104721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{c619b1c8-cc5e-4a11-b8f9-9395d955c75e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{3515b479-6ad4-428f-9eeb-40300c7f092f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glad">
+      <UniqueIdentifier>{88dc191d-d3aa-4c23-ba52-cf5c3e16cf13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLab">
+      <UniqueIdentifier>{9a7e53df-adbf-4647-b460-a8522c4fb9d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{803d7ab1-c17a-4e08-9557-1db21d82be16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Soil">
+      <UniqueIdentifier>{76731ef0-52c9-41dd-9799-02d2aacaa44a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\WindowSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GLabSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\TextSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\EventSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Camera.cpp">
+      <Filter>Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FileSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\RenderSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ShaderSystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\BodySystem.cpp">
+      <Filter>GLab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\pch.cpp">
+      <Filter>Headers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Src\WindowSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GLabSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\EventSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\TextSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\HUtil.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Camera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\FileSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\RenderSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ShaderSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\BodySystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\pch.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
