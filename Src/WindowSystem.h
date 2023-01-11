@@ -175,30 +175,44 @@ namespace WS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #pragma endregion ImGui_Stuff
 
-	inline int			logLevel = 0;
-	inline float		winPosX = 400;
-	inline float		winPosY = 200;
-
-	inline float		Width = 2000;
-	inline float		Height = 1300;
-	inline float		bottomHeight = 300;
-	inline float		topHeight = 100;
-	inline float		leftWidth = 300;
-	inline float		rightWidth = 300;
-	inline float		statusHeight = 30;
+	inline int			logLevel = 8;
+	inline bool			imgui		= true;
+	inline bool			show_imgui  = false;
+	inline bool			implot		= false;
+	inline bool			show_demo_window = false;
+	inline bool			show_another_window = false;
 	
-	inline float		fullWidth;
-	inline float		fullHeight;
-	
-	inline float		Aspect = (float) Width / (float)Height;
 	inline std::string	appNameDefault = "GLab Ver. 1.0";
 	inline std::string	appName;
 
+	inline float		Width		 = 2000;
+	inline float		Height		 = 1300;
+	inline float		bottomHeight = 300;
+	inline float		topHeight	 = 100;
+	inline float		leftWidth	 = 300;
+	inline float		rightWidth	 = 300;
+	inline float		statusHeight = 30;
+	inline float		Aspect;
+		
+	inline float		default_bottomHeight ;
+	inline float		default_topHeight	 ;
+	inline float		default_leftWidth	 ;
+	inline float		default_rightWidth	 ;
+	inline float		default_statusHeight;
+	
+	
+	inline float		fullWidth;
+	inline float		fullHeight;
+	inline float		winPosX = 400;
+	inline float		winPosY = 200;
+	
+	
+
+
 	inline int			frame_buffer_w, frame_buffer_h;
-	inline GLFWwindow* window;
-	// Our state
-	inline bool			show_demo_window = false;
-	inline bool			show_another_window = false;
+	inline GLFWwindow*	window;
+
+
 	inline ImVec4		clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	// mouse buttons
 	inline double		xd, yd, xu, yu, xc, yc, xc_1, yc_1;
@@ -222,11 +236,9 @@ namespace WS
 	
 	void exit();
 	
-	void overlayRender();
+	void preRenderImgui();
 	
-	void preRenderOverlay();
-	
-	void postRenderOverlay();
+	void postRenderImgui();
 	
 	void preRender();
 	

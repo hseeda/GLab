@@ -4,8 +4,9 @@
 //--------------------------------------------
 	namespace ES
 	{
+		union i3 {int i[3];};
 		inline int											m_needs_update = 0;
-		enum et
+		enum ET
 		{
 			none                     = -1,
 			// GLFW
@@ -26,7 +27,7 @@
 			imgui_text				  = 55,
 			imgui_color_edit3		  = 56
 		};
-		inline std::string eventTypeName(et _type) {
+		inline std::string eventTypeName(ET _type) {
 			switch (_type)
 			{
 			case ES::none: return "none";
@@ -71,47 +72,80 @@
 				void* __v[8];
 			} data;
 		};
-
-
-
 #define EVENT_SYSTEM_MAX_EVENTS 32
-	
 	//------------------------------------------------------------------------------ Classes
-		struct levent {
-			et tID;
-			event() : tID(et::none) {}
-			event(et typeID) : tID(typeID) {}
+		struct event{
+			ET typeID;
+			int eventID;
+			packet data;
+			void* p;
+			std::string eventName = "";
 			
-		};
-		struct event : public levent {
-		packet data;
-		void* p;
-		std::string str;
-		event(et typeID, packet &idata) : tID(typeID),data(idata) {}
-		event(et typeID, double d0, double d1) : tID(typeID) {data.d(0) = d0; data.d(1) = d1;}
-		event(et typeID, void* _p, int i0, int i1, int i2)	: tID(typeID) {p = _p;data.i(0) = i0;data.i(1) = i1; data.i(2) = i2; }
-	};
+			event() {
+				typeID = ET::none; eventID = -1;}
+			
+			event(ET itypeID) { typeID = itypeID; eventID = -1; }
+			
+			event(ET itypeID, packet& idata) { 
+				typeID = itypeID;
+				eventID = idata.ID;
+				data = idata;
+			}
+			event(ET itypeID, double d0, double d1) {
+				typeID = itypeID;
+				eventID = -1;
+				data.d(0) = d0; data.d(1) = d1; 
+			}
+			event(ET itypeID, void* _p, int i0, int i1, int i2){
+				typeID = itypeID;
+				eventID = -1;
+				p = _p; data.i(0) = i0; data.i(1) = i1; data.i(2) = i2; 
+			}
+			
+			event(ET itypeID, int ieventID) { typeID = itypeID; eventID = ieventID; }
 
+			event(ET typeID, packet& idata, int ieventID) {
+				typeID = typeID;
+				eventID = ieventID;
+				data = idata; 
+			}
+			event(ET typeID, int ieventID, double d0, double d1) {
+				typeID = typeID;
+				eventID = ieventID;
+				data.d(0) = d0; data.d(1) = d1;
+			}
+			event(ET typeID, int ieventID, void* _p, int i0, int i1, int i2) {
+				typeID = typeID;
+				eventID = ieventID;
+				p = _p; data.i(0) = i0; data.i(1) = i1; data.i(2) = i2;
+			}
+		};
 	//============================================================================================
 
 	//typedef std::function<void(const ES::event&)> SlotWithEvent;
-	typedef std::function<void(const ES::event&)> SlotWithEvent;
+	typedef std::function<void(const ES::event&)> Slot;
 
 		// this is how to bind
 		// #include <functional>    #for std::placeholders::_1
+		// HS::Dispatcher.subscribe(char[8], std::bind( &HS::CLASS::handle_function, this));
 		// HS::Dispatcher.subscribe(char[8], std::bind( &HS::CLASS::handle_function, this, std::placeholders::_1 ));
 		// handle_function signature is:
-		//                         void handle(const Event& e) {  const MouseEvent& ee = e.get<MouseEvent>(); }
+		//                         void handle()  }
+		//                         void handle(const Event& e) { }
 		
-	void subscribe(et event_type, SlotWithEvent&& slot, int eventID = -1);
+		std::pair<int/*event_id*/, Slot> *subscribe(ET event_type, Slot&& slot, int event_id = -1);
 
 		// dispatch event right away
+		void dispatch(ET event_type, int event_id, const event* ievent = nullptr);
 		void dispatch(const ES::event & event);
-		void dispatch(et event_type);
+		void dispatch(ET event_type, int event_id = -1);
+		void dispatch(int event_id);
 		
-		void post(const ES::event &event);
-		void post(et event_type);
-		void post(et event_type,packet &data);
+		void post(ET event_type, int event_id, const event* ievent = nullptr);
+		void post(const ES::event &ievent);
+		void post(ET event_type, int event_id = -1);
+		void post(ET event_type,packet &data);
+		
 		void postSkipRepeat(const ES::event& event);
 		void postReplaceRepeat(const ES::event& event);
 

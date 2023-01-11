@@ -30,8 +30,6 @@ int main(int, char**)
     SS::print();
     TS::init();
     BS::pre_init();
-    
-
 
     int win1 = WS::addImguiWindow("GLab Options");
 
@@ -87,7 +85,7 @@ int main(int, char**)
             
         glfwPollEvents();
         ES::flush();     
-        WS::preRenderOverlay();
+        WS::preRenderImgui();
         
         if (ES::isUpdateNeeded()) 
         {        
@@ -132,7 +130,7 @@ int main(int, char**)
 		}
 		WS::postRender();
         
-        WS::postRenderOverlay();
+        WS::postRenderImgui();
         glfwSwapBuffers(WS::window);
 
     }

@@ -36,7 +36,7 @@ namespace RS {
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	void FBRenderer::init(GLuint ms /*= 0*/)
 	{
-		ES::subscribe(ES::et::window_resize, std::bind(&FBRenderer::resize, this, std::placeholders::_1));
+		ES::subscribe(ES::ET::window_resize, std::bind(&FBRenderer::resize, this, std::placeholders::_1));
 
 		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 			// positions   // texCoords
@@ -203,7 +203,7 @@ namespace RS {
 	void FBRendererMS::init(GLuint ms /*= 0*/)
 	{
 		multisample = ms;
-		ES::subscribe(ES::et::window_resize, std::bind(&FBRendererMS::resize, this, std::placeholders::_1));
+		ES::subscribe(ES::ET::window_resize, std::bind(&FBRendererMS::resize, this, std::placeholders::_1));
 
 		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 			// positions   // texCoords

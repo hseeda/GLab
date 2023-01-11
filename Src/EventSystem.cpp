@@ -4,117 +4,181 @@
 
 namespace ES
 {
-	//inline EventSystem es;
-	std::map <et, std::vector<std::pair <int,SlotWithEvent>>>	m_observers_with_event;
-	ES::event									m_event_store[EVENT_SYSTEM_MAX_EVENTS];
-	int											m_event_count = 0;
-	/*int											m_needs_update = 0;*/
-	
-	void subscribe(et event_type, SlotWithEvent&& slot, int eventID /*= -1*/)
+	event dummy_event;
+	std::unordered_map <int /*event_type*/, std::vector<std::pair<int /*event_id*/, Slot>>> m_slots;
+	ES::event				m_event_store[EVENT_SYSTEM_MAX_EVENTS];
+	int						m_event_store_count = 0;
+	//<int/*event_type*/, int/*event_id*/, int =-1 if no event is specified, 1 otherwise>	
+	i3	m_id_store_id[EVENT_SYSTEM_MAX_EVENTS];
+
+	std::pair<int  /*event_id*/, Slot>* subscribe(ET event_type, Slot&& slot, int event_id /* = -1*/)
 	{
-		m_observers_with_event[event_type].push_back(std::make_pair(eventID, slot));
+		std::vector<std::pair<int, Slot>>* pslots;
+
+		try {
+			pslots = &m_slots.at(event_type);
+		}
+		catch (std::out_of_range)
+		{
+			std::vector<std::pair<int, Slot>> vslots;
+			m_slots.insert({ event_type, std::move (vslots)});
+			pslots = &m_slots.at(event_type);
+		}
+		pslots->push_back(std::make_pair(event_id, slot));
+		return &pslots->back();
 	}
 
-	void dispatch(const ES::event& event)
+	void dispatch(ET event_type, int event_id , const event* ievent)
 	{
-		if (m_observers_with_event.find(event.tID) != m_observers_with_event.end())	// if found
+		std::vector<std::pair<int, Slot>>* pslots;
+		try {
+			pslots = &m_slots.at(event_type);
+		}
+		catch (std::out_of_range)
 		{
-			//_plcb("event function dispatched");
-			auto slot_pair = m_observers_with_event.at(event.tID);
-			size_t n = slot_pair.size();
-			for (auto i = 0; i < n; i++) {
-				int id = slot_pair[i].first;
-				auto func = slot_pair[i].second;
-				if (id < 0 || event.data.ID == id)
-				{
-					WS::log.AddLog(5,"[event][%i] %s\n", (int)event.tID, eventTypeName(event.tID).c_str());
-					func(event);
-				}
-				//_pl("event skipped");
+			return;
+		}
+		size_t n = pslots->size();
+		for (auto i = 0; i < n; i++) {
+			std::pair<int, Slot>& p = pslots->at(i);
+			int slot_id = p.first;
+			auto func = p.second;
+			if (event_id < 0 || event_id == slot_id)
+			{
+				WS::log.AddLog(5, "[event][%i] %s\n", (int)event_type, eventTypeName((ET) event_type).c_str());
+				if(ievent) func(*ievent);
+				else func(dummy_event);
 			}
 		}
 	}
 
-	void dispatch(et event_type)
+	void dispatch(const ES::event& ievent)
 	{
-		dispatch(event(event_type));
+		ET event_type = ievent.typeID;
+		int event_id = ievent.eventID;
+		dispatch(event_type, event_id, &ievent);
 	}
 
-	void post(const ES::event& event)
+	void dispatch(ET event_type, int event_id /*= -1*/)
 	{
-		if (m_event_count == EVENT_SYSTEM_MAX_EVENTS)
-		{
-			_pl("EventSystem::post: event queue full");
-			return;
+		dispatch(event_type, event_id, nullptr);
+	}
+
+	void dispatch(int event_id)
+	{
+		dispatch(ET::none, event_id,nullptr);
+	}
+
+	void post(ET event_type, int event_id, const event* ievent /*= nullptr*/) {
+		if (m_event_store_count == EVENT_SYSTEM_MAX_EVENTS) { _pl("EventSystem::post: event queue full");	return; }
+		if (ievent == nullptr) {
+			m_id_store_id[m_event_store_count].i[0] = event_type;
+			m_id_store_id[m_event_store_count].i[1] = event_id;
+			m_id_store_id[m_event_store_count].i[2] = -1;
 		}
-			m_event_store[m_event_count] = event;
-			m_event_count++;
-			return;
+		else {
+			m_id_store_id[m_event_store_count].i[0] = event_type;
+			m_id_store_id[m_event_store_count].i[1] = event_id;
+			m_id_store_id[m_event_store_count].i[2] = 1;
+			m_event_store[m_event_store_count] = *ievent;
+		}
+		m_event_store_count++;
 	}
-
-	void post(et event_type)
+	
+	void post(const ES::event& ievent)
 	{
-		post(event(event_type));
+		if (m_event_store_count == EVENT_SYSTEM_MAX_EVENTS) { _pl("EventSystem::post: event queue full");	return; }
+		
+		int event_type = ievent.typeID;
+		int event_id   = ievent.eventID;
+		m_id_store_id[m_event_store_count].i[0] = event_type;
+		m_id_store_id[m_event_store_count].i[1] = event_id;
+		m_id_store_id[m_event_store_count].i[2] = 1;
+		m_event_store[m_event_store_count] = ievent;
+		m_event_store_count++;
 	}
 
-	void post(et event_type, packet& data)
+	void post(ET event_type, int event_id /*= -1*/)
+	{
+		post(event_type, event_id,nullptr);
+	}
+
+	void post(ET event_type, packet& data)
 	{
 		post(event(event_type, data));
 	}
 
-	void postSkipRepeat(const event& event)
+	void post(int event_id)
 	{
-		if (m_event_count == EVENT_SYSTEM_MAX_EVENTS)
-		{
-			_pl("EventSystem::post: event queue full");
-			return;
-		}
-		if (m_event_count > 0) {
-			if (m_event_store[m_event_count - 1].tID != event.tID) {
-				m_event_store[m_event_count] = event;
-				m_event_count++;
+		post(ET::none, event_id, nullptr);
+	}
+
+	void postSkipRepeat(const event& ievent)
+	{
+		if (m_event_store_count == EVENT_SYSTEM_MAX_EVENTS) { _pl("EventSystem::post: event queue full");	return; }
+		if (m_event_store_count > 0) {
+			if (m_event_store[m_event_store_count - 1].typeID != ievent.typeID) {
+				m_id_store_id[m_event_store_count].i[0] = ievent.typeID;
+				m_id_store_id[m_event_store_count].i[1] = ievent.eventID;
+				m_id_store_id[m_event_store_count].i[2] = 1;
+				m_event_store[m_event_store_count] = ievent;
+				m_event_store_count++;
 			}
 		}
 		else {
-			m_event_store[m_event_count] = event;
-			m_event_count++;
+			m_id_store_id[m_event_store_count].i[0] = ievent.typeID;
+			m_id_store_id[m_event_store_count].i[1] = ievent.eventID;
+			m_id_store_id[m_event_store_count].i[2] = 1;
+			m_event_store[m_event_store_count] = ievent;
+			m_event_store_count++;
 		}
 	}
 
-	void postReplaceRepeat(const event& event)
+	void postReplaceRepeat(const event& ievent)
 	{
-		if (m_event_count == EVENT_SYSTEM_MAX_EVENTS)
-		{
-			_pl("EventSystem::post: event queue full");
-			return;
-		}
-
-		if (m_event_count > 0) {
-			if (m_event_store[m_event_count - 1].tID != event.tID) {
-				m_event_store[m_event_count] = event;
-				m_event_count++;
+		if (m_event_store_count == EVENT_SYSTEM_MAX_EVENTS) { _pl("EventSystem::post: event queue full");	return; }
+		if (m_event_store_count > 0) {
+			if (m_event_store[m_event_store_count - 1].typeID != ievent.typeID) {
+				m_id_store_id[m_event_store_count].i[0] = ievent.typeID;
+				m_id_store_id[m_event_store_count].i[1] = ievent.eventID;
+				m_id_store_id[m_event_store_count].i[2] = 1;
+				m_event_store[m_event_store_count] = ievent;
+				m_event_store_count++;
 			}
 			else {
-				m_event_store[m_event_count - 1] = event;
+				m_id_store_id[m_event_store_count- 1].i[0] = ievent.typeID;
+				m_id_store_id[m_event_store_count- 1].i[1] = ievent.eventID;
+				m_id_store_id[m_event_store_count- 1].i[2] = 1;
+				m_event_store[m_event_store_count- 1] = ievent;
 			}
 		}
 		else {
-			m_event_store[m_event_count] = event;
-			m_event_count++;
+			m_id_store_id[m_event_store_count].i[0] = ievent.typeID;
+			m_id_store_id[m_event_store_count].i[1] = ievent.eventID;
+			m_id_store_id[m_event_store_count].i[2] = 1;
+			m_event_store[m_event_store_count] = ievent;
+			m_event_store_count++;
 		}
 	}
 
 	void flush()
 	{
-		if (m_event_count == 0) return;
-		for (int i = 0; i < m_event_count; i++)
-			dispatch(m_event_store[i]);
-		m_event_count = 0;
+		if (m_event_store_count == 0) return;
+		for (int i = 0; i < m_event_store_count; i++) {
+			ET event_type = (ET) m_id_store_id[i].i[0];
+			int event_id = m_id_store_id[i].i[1];
+			int slot_type = m_id_store_id[i].i[2];
+			if(slot_type == -1)
+				dispatch(event_type, event_id,nullptr);
+			else
+				dispatch(m_event_store[i]);
+		}
+		m_event_store_count = 0;
 	}
 
 	void clear()
 	{
-		m_event_count = 0;
+		m_event_store_count = 0;
 	}
 
 	void needsUpdate()

@@ -12,10 +12,10 @@ using namespace glm;
 
 Camera::Camera() {
 	//&HS::CLASS::handle_function, this, std::placeholders::_1 ));
-	ES::subscribe(ES::et::window_resize , std::bind(&Camera::resize, this, std::placeholders::_1));
-	ES::subscribe(ES::et::mouse_wheel, std::bind(&Camera::mouse_wheel, this, std::placeholders::_1));
-	ES::subscribe(ES::et::mouse_click, std::bind(&Camera::mouse_click, this, std::placeholders::_1));
-	ES::subscribe(ES::et::mouse_move_while_pressed, std::bind(&Camera::mouse_move, this, std::placeholders::_1));
+	ES::subscribe(ES::ET::window_resize , std::bind(&Camera::resize, this, std::placeholders::_1));
+	ES::subscribe(ES::ET::mouse_wheel, std::bind(&Camera::mouse_wheel, this, std::placeholders::_1));
+	ES::subscribe(ES::ET::mouse_click, std::bind(&Camera::mouse_click, this, std::placeholders::_1));
+	ES::subscribe(ES::ET::mouse_move_while_pressed, std::bind(&Camera::mouse_move, this, std::placeholders::_1));
 
 	m_quat = glm::quat();
 	m_quat = glm::normalize(m_quat);

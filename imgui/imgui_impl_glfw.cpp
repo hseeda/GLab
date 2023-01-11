@@ -801,9 +801,8 @@ void ImGui_ImplGlfw_NewFrame()
     io.DisplaySize = ImVec2((float)w, (float)h);
     if (w > 0 && h > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / (float)w, (float)display_h / (float)h);
-    if (bd->WantUpdateMonitors)
+    if (bd->WantUpdateMonitors) 
         ImGui_ImplGlfw_UpdateMonitors();
-
     // Setup time step
     double current_time = glfwGetTime();
     io.DeltaTime = bd->Time > 0.0 ? (float)(current_time - bd->Time) : (float)(1.0f / 60.0f);

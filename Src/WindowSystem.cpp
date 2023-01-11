@@ -34,17 +34,24 @@ namespace WS
 		glfwSetErrorCallback(glfw_error_callback);
 		if (!glfwInit()) return 1;
 		WS::log.AddLog(0,"[init] glfw\n");
+		//---------------------------------------------- glfw hints
 		const char* glsl_version = "#version 130";
 		glfwWindowHint(GLFW_SAMPLES, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+		//---------------------------------------------- set window size
 		fullWidth  = leftWidth + Width + rightWidth;
 		fullHeight = topHeight + Height + bottomHeight;
+		Aspect     = (float)Width / (float)Height;
+		default_bottomHeight	= bottomHeight;
+		default_rightWidth		= rightWidth;
+		default_leftWidth		= leftWidth;
+		default_topHeight		= topHeight;
+		default_statusHeight	= statusHeight;
+		//---------------------------------------------- app name
 		appName = appNameDefault;
-		
-		// Create window with graphics context
+		//---------------------------------------------- Create window with graphics context
 		window = glfwCreateWindow(fullWidth, fullHeight, appName.c_str(), NULL, NULL);
 		if (window == NULL) return 1;
 		glfwSetWindowPos(window, winPosX, winPosY);
@@ -71,16 +78,21 @@ namespace WS
 		glfwSetCharCallback           (window, character_callback);
 		glfwSetScrollCallback         (window, scroll_callback);
 		glfwGetFramebufferSize        (WS::window, &frame_buffer_w, &frame_buffer_h);
-
+		//---------------------------------------------- load glad
 		gladLoadGL();
-
-		// Setup Dear ImGui context
+		//---------------------------------------------- Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		WS::io = &ImGui::GetIO();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 		
+		ImGui::StyleColorsDark();
+		io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		WS::io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		WS::io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 24.0f);
+
 		//ImGui::StyleColorsLight();
 		// Load Fonts
 		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -105,64 +117,54 @@ namespace WS
 		//		};
 		//		ES::subscribe(ES::imgui_color_edit3, fcol, WS::addColorEdit3("BG color", 0.45f, 0.55f, 0.60f));
 		
-	
+		//---------------------------------------------- openGL Cleqar color
 		glClearColor(0.45f, 0.55f, 0.60f, 1.0f);
 		glfwPollEvents();
-		printf(">>> OpenGL version supported by this platform (%s): \n",
-			glGetString(GL_VERSION));
-
+		printf(">>> OpenGL version supported by this platform (%s): \n",glGetString(GL_VERSION));
+		//---------------------------------------------- Setup Render System
+		
 		//glViewport(leftWidth, bottomHeight, WS::Width, WS::Height);
 		//renderer.setMultisample(4);
 		//RS::Renderer renderer;
 		//ren = new RS::Renderer();
 		ren = new RS::FBRendererMS();
 		ren->init(16);
-
-		ImGui::StyleColorsDark();
-		io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		WS::io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		WS::io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 24.0f);
-		//-- IMGUI Windows-------------------------------------------------------------------------------------
+		//---------------------------------------------- add imgui windows
 		ImGuiWindowFlags layoutFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+		//-------------------------------
 		int i = addImguiWindow("Tools"); // =0
 		imguiWindows[i].setFlags(ImGuiWindowFlags_NoDecoration);
 		imguiWindows[i].setSize(ImVec2(leftWidth, Height), ImGuiCond_Always);
 		imguiWindows[i].setPos(ImVec2(0, topHeight));
 		addText(i, "Tools");
 		addSeparator(i);
-
+		//-------------------------------
 		i = addImguiWindow("Log"); // = 1
 		imguiWindows[i].setFlags(ImGuiWindowFlags_NoDecoration);
 		imguiWindows[i].setSize(ImVec2(fullWidth, bottomHeight - statusHeight), ImGuiCond_Always);
 		imguiWindows[i].setPos(ImVec2(0.0f, topHeight + Height));
 		addText(i, "Log");
-
+		//-------------------------------
 		i = addImguiWindow("Status"); // = 2
 		imguiWindows[i].setFlags(ImGuiWindowFlags_NoDecoration);
 		imguiWindows[i].setSize(ImVec2(fullWidth, statusHeight), ImGuiCond_Always);
 		imguiWindows[i].setPos(ImVec2(0.0f, fullHeight - statusHeight));
-
+		//-------------------------------
 		i = addImguiWindow("Menu"); // = 3
 		imguiWindows[i].setFlags(ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_MenuBar);
 		imguiWindows[i].setSize(ImVec2(fullWidth, topHeight), ImGuiCond_Always);
 		imguiWindows[i].setPos(ImVec2(0.0f, 0.0));
-
+		//-------------------------------
 		i = addImguiWindow("GLab Options"); // = 4
 		imguiWindows[i].setFlags(ImGuiWindowFlags_NoDecoration);
 		imguiWindows[i].setSize(ImVec2(rightWidth, Height), ImGuiCond_Always);
 		imguiWindows[i].setPos(ImVec2(leftWidth + Width, topHeight));
 		addText(i, "GLab Options");
 		addSeparator(i);
-		
-		auto f = [](ES::event e)
-		{
-			resizeImgui();
-
-		};
+		//-------------------------------
+		auto f = [](ES::event e){	resizeImgui();};
 		ES::subscribe(ES::window_resize, f);
-		//-- IMGUI Windows-------------------------------------------------------------------------------------
-
+		//-----------------------------------------------
 		WS::log.AddLog(0,"[init] IMGui\n");
 		return 0;
 	}
@@ -179,37 +181,27 @@ namespace WS
 		glfwTerminate();
 	}
 
-	void overlayRender()
+	void preRenderImgui()
 	{
-		// Start the Dear ImGui frame
+		//----------------------------------------------- Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
-
 		ImGui::NewFrame();
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (WS::show_demo_window)
-			ImGui::ShowDemoWindow(&WS::show_demo_window);
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-		if(0){
+		//----------------------------------------------- imgui Demo windows
+		if (WS::show_demo_window) ImGui::ShowDemoWindow(&WS::show_demo_window);
+		//----------------------------------------------- another windows
+		if (0) {
 			static float f = 0.0f;
 			static int counter = 0;
-
 			ImGui::Begin("GLab Options");							// Create a window called "Hello, world!" and append into it.
-
 			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 			ImGui::Checkbox("Demo Window", &WS::show_demo_window);  // Edit bools storing our window open/close state
-			
 			if (ImGui::Checkbox("Another Window", &WS::show_another_window))
 			{
 				_pl(">>> item active");
 			}
-
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);			// Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*) &WS::clear_color); // Edit 3 floats representing a color
-
 			if (ImGui::Button("Button")) {							// Buttons return true when clicked (most widgets return true when edited/activated)
 				counter++;
 				_pl(">>> item active");
@@ -219,12 +211,12 @@ namespace WS
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
-		//================================================
+		//----------------------------------------------- imguiWindos [standard Windows]
 		bool b = 0;
 		for (int i = 0; i < imguiWindows.size(); i++) {
-			auto *iw = &imguiWindows[i];
+			auto* iw = &imguiWindows[i];
 			if (!iw->show) continue;
-			if (iw->sz.x  >= 0) ImGui::SetNextWindowSize(iw->sz, iw->cond);
+			if (iw->sz.x >= 0) ImGui::SetNextWindowSize(iw->sz, iw->cond);
 			if (iw->pos.x >= 0) ImGui::SetNextWindowPos(iw->pos, iw->cond);
 			ImGui::Begin(iw->name.c_str(), &b, iw->layoutFlags);
 			for (int j = 0; j < iw->imguiItems.size(); j++) iw->imguiItems[j].render();
@@ -232,37 +224,11 @@ namespace WS
 		}
 		drawImguiMenu();
 		drawImguiLog();
-		
-		//================================================
-		
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-		// 3. Show another simple window.
-		if (WS::show_another_window)
-		{
-			ImGui::Begin("Another Window", &WS::show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				WS::show_another_window = false;
-			ImGui::End();
-		}
-
-
-
-		// Rendering
+		//----------------------------------------------- render imgui
 		ImGui::Render();
-		//int display_w, display_h;
-		//glClear(GL_COLOR_BUFFER_BIT);
-
 	}
 
-	void preRenderOverlay() {
-		overlayRender();
-	}
-
-	void postRenderOverlay() {
+	void postRenderImgui() {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());		
 	}
 	
@@ -407,14 +373,14 @@ namespace WS
 
 		WS::doWhileResizing();
 		ES::needsUpdate();
-		ES::postReplaceRepeat(ES::event(ES::et::window_resize));
+		ES::postReplaceRepeat(ES::event(ES::ET::window_resize));
 
 	}
 	
 	static void glfw_error_callback(int error, const char* description)
 	{
 		fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-		ES::dispatch(ES::event(ES::et::glfw_error));
+		ES::dispatch(ES::event(ES::ET::glfw_error));
 	}
 
 	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -427,7 +393,7 @@ namespace WS
 		yc = ypos - topHeight ;
 		deltaX = xc - xd;
 		deltaY = yc - yd;
-		ES::post(ES::event(ES::et::mouse_move_while_pressed, deltaX, deltaY));
+		ES::post(ES::event(ES::ET::mouse_move_while_pressed, deltaX, deltaY));
 	}
 
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -437,6 +403,7 @@ namespace WS
 			
 		if (action == GLFW_PRESS) {
 			glfwGetCursorPos(window, &xd, &yd);
+			_pl(xd, " ", yd);
 			xd -= leftWidth;
 			yd -= topHeight;
 			if (xd < 0 || yd < 0) return;
@@ -467,7 +434,7 @@ namespace WS
 			//	ES::dispatch(ES::event(2, Width, Height));
 			//}
 		}
-			ES::post(ES::event(ES::et::mouse_click, (void*)window, button, action, mods));
+			ES::post(ES::event(ES::ET::mouse_click, (void*)window, button, action, mods));
 	}
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -489,7 +456,7 @@ namespace WS
 
 		ImGuiIO& io = ImGui::GetIO();
 		if (!io.WantCaptureMouse)
-			ES::dispatch(ES::event(ES::et::mouse_wheel, xoffset, yoffset));
+			ES::dispatch(ES::event(ES::ET::mouse_wheel, xoffset, yoffset));
 	}
 
 	void doWhileResizing() {
