@@ -22,12 +22,12 @@ public:
 	void qrotate(const float& degrees, const glm::vec3& axis);
 
 	
-	void resize(ES::event e);
+	void resize(CEvent e);
 	void update();
-	void mouse_wheel(ES::event e);
+	void mouse_wheel(CEvent e);
 
-	void mouse_move(ES::event e);
-	void mouse_click(ES::event e);
+	void mouse_move(CEvent e);
+	void mouse_click(CEvent e);
 	
 	bool to2D(glm::vec3& in_pos3d, glm::vec2& out_pos2d);
 	

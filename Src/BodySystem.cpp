@@ -2,6 +2,7 @@
 #include "BodySystem.h"
 #include "GLabSystem.h"
 #include "WindowSystem.h"
+#include "ImguiSystem.h"
 #include "EventSystem.h"
 #include "ShaderSystem.h"
 
@@ -9,16 +10,37 @@ using namespace glm;
 
 
 namespace BS {
+	inline std::vector<base*> bodies;
 	
 	// body not build by default
-	BS::body* addBody(int shaderIndex /*= 0*/, Camera* icam /*= nullptr*/, int flag1 /*= 0*/)
+	base* addBody(BT bodyType /*= BT::defaulBody*/, int shaderIndex /*= 0*/, Camera* icam /*= nullptr*/, int flag1 /*= 0*/)
 	{
-		bodies.push_back(new BS::defaultBody());
-		if(icam !=nullptr) bodies.back()->cam = icam;
-		else bodies.back()->cam = BS::camera;
-		bodies.back()->shaderNumber = shaderIndex;
-		bodies.back()->flag1 = flag1;
-		return bodies.back();
+		base* b = nullptr;
+		switch (bodyType)
+		{
+		case none:
+			
+			break;
+		case defaulBody:
+			bodies.push_back(new BS::defaultBody());
+			break;
+		case BT::body:
+			bodies.push_back(new BS::body());
+			break;
+		default:
+			break;
+		}
+		b = bodies.back();
+		if(icam !=nullptr) b->cam = icam;
+		else b->cam = BS::camera;
+		b->shaderNumber = shaderIndex;
+		b->flag1 = flag1;
+		return b;
+	}
+
+	BS::base* addBody(int shaderIndex)
+	{
+		return addBody(BT::defaulBody, shaderIndex);
 	}
 
 	void pre_init()
@@ -47,13 +69,7 @@ namespace BS {
 		}
 	}
 
-	body::body(){}
-
-	body::~body(){}
-
-	void body::build()	{}
-
-	void body::init()
+	void base::init()
 	{
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
@@ -79,7 +95,7 @@ namespace BS {
 		ES::needsUpdate();
 	}
 
-	void body::do1()
+	void base::do1()
 	{
 		//GLuint shaderID = SS::getShaderID(shaderNumber);
 		//glUseProgram(shaderID);
@@ -122,8 +138,8 @@ namespace BS {
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		
-		GLint tmp_polygon_mode;
-		glGetIntegerv(GL_POLYGON_MODE, &tmp_polygon_mode);
+		//GLint tmp_polygon_mode;
+		//glGetIntegerv(GL_POLYGON_MODE, &tmp_polygon_mode);
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 		
 		glDrawElements( 
@@ -133,14 +149,14 @@ namespace BS {
 			(void*)0			// element array buffer offset
 		);
 
-		glPolygonMode(GL_FRONT_AND_BACK, tmp_polygon_mode);
+		//glPolygonMode(GL_FRONT_AND_BACK, tmp_polygon_mode);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
 	}
 
-	void body::exit()
+	void base::exit()
 	{
 		glDeleteBuffers		(1, &VBO);
 		glDeleteBuffers		(1, &CBO);
@@ -148,16 +164,15 @@ namespace BS {
 		glDeleteVertexArrays(1, &VAO);
 	}
 
-
-	void body::addImguiControls(int imguiWID, std::string imguiItemName)
+	void base::addImguiControls(int imguiWID, std::string imguiItemName)
 	{
-		auto ff = [this](ES::event e) 
+		auto ff = [this](CEvent e) 
 		{
 			if (e.data.b(0)) this->polygonMode = GL_LINE;
 			else this->polygonMode = GL_FILL;
 			ES::needsUpdate();
 		};
-		ES::subscribe(ES::imgui_checkbox, ff, WS::addCheckbox(imguiWID, imguiItemName, false));
+		ES::subscribe(ET::imgui_checkbox, ff, IS::addCheckbox(imguiWID, imguiItemName, false));
 	}
 
 	void defaultBody::build()

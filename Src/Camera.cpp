@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Camera.h"
-
 #include "EventSystem.h"
 #include "WindowSystem.h"
+#include "ImguiSystem.h"
 
 #define DEFAULT_FORWARD    (vec3(0, 0, -1))
 #define DEFAULT_UP         (vec3(0, 1, 0))
@@ -12,10 +12,10 @@ using namespace glm;
 
 Camera::Camera() {
 	//&HS::CLASS::handle_function, this, std::placeholders::_1 ));
-	ES::subscribe(ES::ET::window_resize , std::bind(&Camera::resize, this, std::placeholders::_1));
-	ES::subscribe(ES::ET::mouse_wheel, std::bind(&Camera::mouse_wheel, this, std::placeholders::_1));
-	ES::subscribe(ES::ET::mouse_click, std::bind(&Camera::mouse_click, this, std::placeholders::_1));
-	ES::subscribe(ES::ET::mouse_move_while_pressed, std::bind(&Camera::mouse_move, this, std::placeholders::_1));
+	ES::subscribe(ET::window_resize , std::bind(&Camera::resize, this, std::placeholders::_1));
+	ES::subscribe(ET::mouse_wheel, std::bind(&Camera::mouse_wheel, this, std::placeholders::_1));
+	ES::subscribe(ET::mouse_click, std::bind(&Camera::mouse_click, this, std::placeholders::_1));
+	ES::subscribe(ET::mouse_move_while_pressed, std::bind(&Camera::mouse_move, this, std::placeholders::_1));
 
 	m_quat = glm::quat();
 	m_quat = glm::normalize(m_quat);
@@ -34,7 +34,7 @@ void Camera::qrotate(const float& degrees, const glm::vec3& axis)
 		
 }
 
-void Camera::resize(ES::event e) {
+void Camera::resize(CEvent e) {
 	update();
 }
 
@@ -62,7 +62,7 @@ float angleBetween(glm::vec3 a,glm::vec3 b,glm::vec3 origin) {
 	return glm::acos(glm::dot(da, db));
 }
 
-void Camera::mouse_move(ES::event e) {
+void Camera::mouse_move(CEvent e) {
 	float m = 1.0f; if (WS::mods == 1) m = 0.1f; else if (WS::mods == 2) m = 10.0f;
 	
 	if (WS::mouse_down == GLFW_MOUSE_BUTTON_LEFT) {
@@ -116,7 +116,7 @@ void Camera::mouse_move(ES::event e) {
 	}
 }
 
-void Camera::mouse_wheel(ES::event e) {
+void Camera::mouse_wheel(CEvent e) {
 	float m = 1.0f; if (WS::mods == 1) m = 0.1f; else if (WS::mods == 2) m = 10.0f;
 	
 	if (is_perspective) {
@@ -140,7 +140,7 @@ void Camera::mouse_wheel(ES::event e) {
 	update();
 }
 
-void Camera::mouse_click(ES::event e) {
+void Camera::mouse_click(CEvent e) {
 	GLFWwindow* w = (GLFWwindow * ) e.p;
 	d_position = m_position;
 	d_quat = m_quat;
@@ -262,14 +262,14 @@ void Camera::SetClippingPlanes(float znear, float zfar)
 
 void Camera::addImguiControls(int imguiWID, std::string imguiItemName)
 {
-	auto ff = [this](ES::event e)
+	auto ff = [this](CEvent e)
 	{
 		if (e.data.b(0)) this->is_perspective = false;
 		else this->is_perspective = true;
 		this->switchCameraMode(this->is_perspective);
 		ES::needsUpdate();
 	};
-	ES::subscribe(ES::imgui_checkbox, ff, WS::addCheckbox(imguiWID, imguiItemName, false));
+	ES::subscribe(ET::imgui_checkbox, ff, IS::addCheckbox(imguiWID, imguiItemName, false));
 }
 
 void Camera::switchCameraMode(bool perspective) {

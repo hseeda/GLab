@@ -1,12 +1,16 @@
 #include "pch.h"
 #include "ShaderSystem.h"
 #include "WindowSystem.h"
+#include "ImguiSystem.h"
 #include "FileSystem.h"
 
 namespace SS {
+
 	inline std::vector<Shader*> shaders;
+	inline std::unordered_map<std::string, int /*shaderIndex*/ > shaderNameMap;
+
 	inline std::vector<Texture*> textures;
-	
+	inline std::unordered_map<std::string, int /*shaderIndex*/ > textureNameMap;
 	void init()
 	{
 		// texture 0
@@ -15,9 +19,9 @@ namespace SS {
 		addShader("o1");
 		// shader 1 with texture as image
 		addShader("t1"); 
-		WS::log.AddLog(0,"[init] shader system\n");
+		IS::log(0,"[init] shader system\n");
 	}
-		
+
 	int addShader(std::string short_name_without_ext)
 	{
 		std::string vs = FS::_shaders_path + short_name_without_ext + ".vs";
@@ -26,6 +30,7 @@ namespace SS {
 		s->load(vs.c_str(), fs.c_str());
 		s->short_name = vs;
 		shaders.push_back(s);
+		shaderNameMap[short_name_without_ext] = shaders.size() - 1;
 		return (int) shaders.size() - 1;		
 	}
 
@@ -35,6 +40,7 @@ namespace SS {
 		Texture* t = new Texture;
 		t->load(path);
 		textures.push_back(t);
+		textureNameMap[short_texture_name] = textures.size() - 1;
 		return (int) shaders.size() - 1;
 	}
 

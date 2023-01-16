@@ -4,63 +4,46 @@
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 #include "pch.h"
 #include "GLabSystem.h"
-#include "WindowSystem.h"
-#include "EventSystem.h"
-#include "TextSystem.h"
-#include "FileSystem.h"
-#include "ShaderSystem.h"
-#include "BodySystem.h"
-#include "RenderSystem.h"
 
 int main(int, char**)
 {
 	pwd();
 
-   
-    WS::log.AddLog(0,"[init] %s\n", getCurrentTime().c_str()); 
-    WS::log.AddLog(0,"[init] %s started\n", WS::appNameDefault.c_str()); 
-    WS::log.AddLog(0,"[init] %s\n", getCurrentDirectory().c_str()); 
+	IS::log(0, "[init] %s\n", getCurrentTime().c_str());
+	IS::log(0, "[init] %s started\n", WS::appNameDefault.c_str());
+	IS::log(0, "[init] %s\n", getCurrentDirectory().c_str());
     //_pl(openFileDialog());
-    WS::init();
 
+    GS::init();
 
+    int win1 = IS::addWindow("GLab Options");
 
-    //GS::init();
-	SS::init();
-    SS::print();
-    TS::init();
-    BS::pre_init();
-
-    int win1 = WS::addImguiWindow("GLab Options");
-
-    WS::addText(win1,"Camera Controls");
-    WS::addSeparator(win1);
+    IS::addText(win1,"Camera Controls");
+    IS::addSeparator(win1);
     BS::camera->addImguiControls(win1, "Orth Projection");
 
-	auto ff = [](ES::event e) {if (e.data.b(0)) _pl(e.data.ID); };
-	auto fslider = [](ES::event e) {_pl(e.data.ID, ": ", e.data.f(0)); };
-	auto fcol = [](ES::event e) {_pl(e.data.ID, ": ", e.data.f(0), ",", e.data.f(1), ",", e.data.f(2)); };
+	auto ff = [](CEvent e) {if (e.data.b(0)) _pl(e.data.ID); };
+	auto fslider = [](CEvent e) {_pl(e.data.ID, ": ", e.data.f(0)); };
+	auto fcol = [](CEvent e) {_pl(e.data.ID, ": ", e.data.f(0), ",", e.data.f(1), ",", e.data.f(2)); };
 
+    ES::subscribe(ET::imgui_slider, fslider, IS::addSlider(win1,"SL1",.5,0,1));
+    IS::addCheckbox(win1, "TEST1", false);
+    IS::addCheckbox(win1, "TEST2", false,true);
+    IS::addCheckbox(win1, "TEST3", false);
 
-    ES::subscribe(ES::imgui_slider, fslider, WS::addSlider(win1,"SL1",.5,0,1));
-    WS::addCheckbox(win1, "TEST1", false);
-    WS::addCheckbox(win1, "TEST2", false,true);
-    WS::addCheckbox(win1, "TEST3", false);
+	ES::subscribe(ET::imgui_checkbox, ff, IS::addCheckbox(win1, "TEST4", false));
+    ES::subscribe(ET::imgui_button, std::bind([]() {WS::toggleMSAA(); }), IS::addButton(win1, "Button   1"));
 
-    ES::subscribe(ES::imgui_checkbox, ff, WS::addCheckbox(win1, "TEST4", false));
-    ES::subscribe(ES::imgui_button, ff, WS::addButton(win1, "Button   1"));
-
-	//RS::FBRendererMS renderer;
- //   //renderer.setMultisample(4);
-	////RS::Renderer renderer;
- //   renderer.init(16);
+	// RS::FBRendererMS renderer;
+	// renderer.setMultisample(4);
+	// RS::Renderer renderer;
+	// renderer.init(16);
       
     auto bb = BS::addBody(1);
     bb->build();
 
     bb->addImguiControls(win1, "wireframe");
     
-
 	//auto b = BS::addBody(1);
 
 	//FS::readAbaqusInpFile(b->vertexData, b->indexData, "../Misc/models/aq123.inp");
@@ -81,15 +64,13 @@ int main(int, char**)
     // Main loop
     while (glfwGetKey(WS::window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(WS::window))
     {
-        
-            
-        glfwPollEvents();
+        glfwWaitEvents();
+        //glfwPollEvents();
         ES::flush();     
-        WS::preRenderImgui();
+        IS::preRender();
         
         if (ES::isUpdateNeeded()) 
         {        
-            
             //_p(".");
             WS::preRender();
 
@@ -100,7 +81,6 @@ int main(int, char**)
             
             BS::do1();
             //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
             //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             //b.do1(1);
             //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
@@ -108,7 +88,6 @@ int main(int, char**)
 
             // Cull triangles which normal is not towards the camera
             //glEnable(GL_CULL_FACE);
-
             //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             //glDisable(GL_DEPTH_TEST);
 
@@ -129,18 +108,14 @@ int main(int, char**)
             ES::updated();
 		}
 		WS::postRender();
-        
-        WS::postRenderImgui();
+        IS::postRender();
         glfwSwapBuffers(WS::window);
 
     }
 	//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH   
     
-    TS::exit();
-    BS::exit();
-    SS::exit();
-    //GS::exit();
-    WS::exit();
+    GS::exit();
+
 
 
 

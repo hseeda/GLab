@@ -22,6 +22,9 @@
     <Filter Include="Soil">
       <UniqueIdentifier>{76731ef0-52c9-41dd-9799-02d2aacaa44a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TODO">
+      <UniqueIdentifier>{aebc0c09-4547-4ee6-994e-409cffd6c496}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\main.cpp">
@@ -56,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\pch.cpp">
       <Filter>Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\imguiSystem.cpp">
+      <Filter>GLab</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,5 +98,16 @@
     <ClInclude Include="..\Src\pch.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\imguiSystem.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\global.h">
+      <Filter>GLab</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\TODO.txt">
+      <Filter>TODO</Filter>
+    </Text>
   </ItemGroup>
 </Project>

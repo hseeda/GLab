@@ -46,7 +46,7 @@ namespace SS {
 	GLuint textureID(int texture_number);
 
 	GLuint LoadShaderFromString(const std::string& vertexCode, const std::string& fragmentCode);
-    GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path);	
+ //   GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path);	
 	
 	void print();
 }

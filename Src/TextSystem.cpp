@@ -23,7 +23,7 @@ namespace TS {
 		unsigned int Advance;   // Horizontal offset to advance to next glyph
 	};
 	std::map<GLchar, Character> Characters;
-	void resize(ES::event e) {
+	void resize(CEvent e) {
 		glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WS::Width), 0.0f, 
 			static_cast<float>(WS::Height));
 		glUseProgram(shaderID);
@@ -51,7 +51,7 @@ namespace TS {
 		fs.append("color = vec4(textColor, 1.0) * sampled; \n");
 		fs.append("} \n");
 		shaderID = SS::LoadShaderFromString(vs, fs);
-		ES::subscribe(ES::ET::window_resize, TS::resize);
+		ES::subscribe(ET::window_resize, TS::resize);
 
 		glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WS::Width), 0.0f, static_cast<float>(WS::Height));
 		glUseProgram(shaderID);

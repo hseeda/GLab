@@ -9,11 +9,13 @@ namespace RS {
 	public:
 		Renderer() {};
 		~Renderer() {};
-		virtual void init(GLuint ms = 0);
+		virtual void init();
 		virtual void preRender();
 		virtual void postRender();
+		virtual void resize(CEvent e);
 		virtual void exit();
-		void setMultisample(GLuint ms);
+		virtual void setMultisample();
+		virtual void toggleMultisample();
 	protected:
 		GLuint multisample = 0;
 	};
@@ -22,11 +24,11 @@ namespace RS {
 	public:
 		FBRenderer() {};
 		~FBRenderer() {};
-		virtual void init(GLuint ms = 0) override;
-		void resize(ES::event e);
-		virtual void preRender() override;
-		virtual void postRender() override;
-		virtual void exit() override;
+		void init() override;
+		void resize(CEvent e) override;
+		void preRender() override;
+		void postRender() override;
+		void exit() override;
 
 	private:
 		GLuint screenVAO, screenVBO;
@@ -41,12 +43,13 @@ namespace RS {
 	public:
 		FBRendererMS() { multisample = 4; };
 		~FBRendererMS() {};
-		virtual void init(GLuint ms = 0) override;
-		void resize(ES::event e);
-		virtual void preRender() override;
-		virtual void postRender() override;
-		virtual void exit() override;
-		void setMultisample(GLuint ms);
+		void init() override;
+		void resize(CEvent e) override;
+		void preRender() override;
+		void postRender() override;
+		void exit() override;
+		void setMultisample() override;
+		void toggleMultisample() override;
 
 	private:
 		GLuint screenVAO, screenVBO;

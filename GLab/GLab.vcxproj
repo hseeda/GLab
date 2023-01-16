@@ -16,6 +16,7 @@
     <ClCompile Include="..\Src\EventSystem.cpp" />
     <ClCompile Include="..\Src\FileSystem.cpp" />
     <ClCompile Include="..\Src\GLabSystem.cpp" />
+    <ClCompile Include="..\Src\imguiSystem.cpp" />
     <ClCompile Include="..\Src\main.cpp" />
     <ClCompile Include="..\Src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -32,12 +33,17 @@
     <ClInclude Include="..\Src\EventSystem.h" />
     <ClInclude Include="..\Src\FileSystem.h" />
     <ClInclude Include="..\Src\GLabSystem.h" />
+    <ClInclude Include="..\Src\global.h" />
     <ClInclude Include="..\Src\HUtil.hpp" />
+    <ClInclude Include="..\Src\imguiSystem.h" />
     <ClInclude Include="..\Src\pch.h" />
     <ClInclude Include="..\Src\RenderSystem.h" />
     <ClInclude Include="..\Src\ShaderSystem.h" />
     <ClInclude Include="..\Src\TextSystem.h" />
     <ClInclude Include="..\Src\WindowSystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\TODO.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{021A2EE3-186B-4506-9793-1CFF5C5A34AB}</ProjectGuid>
